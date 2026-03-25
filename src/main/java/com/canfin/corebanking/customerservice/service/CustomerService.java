@@ -18,5 +18,8 @@ public interface CustomerService {
 
     public CustomerDto updateCustomer(CustomerDto request) throws OmniNGException;
 
+    public CustomerDto getCustomerDetails(Integer branchCode,Long customerId) throws OmniNGException;
+
+    public void deleteCustomer(Integer branchCode,Long customerId) throws OmniNGException;
 
 }

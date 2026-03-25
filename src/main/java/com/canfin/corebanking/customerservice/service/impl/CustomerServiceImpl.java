@@ -174,10 +174,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto updateCustomer(CustomerDto request) throws OmniNGException {
-        
-        if(null==request.getCustomerId()) {
-            throw new OmniNGException("Customer Id is required");
-        }
         Customer customer =getUniqueCustomer(tenantId, request.getBranchCode(), request.getCustomerId());
         if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
             throw new OmniNGException("Customer already approved. so cannot be update Customer Details");
@@ -226,6 +222,22 @@ public class CustomerServiceImpl implements CustomerService {
         }
         Customer updatedCustomer = customerRepository.save(customer);
         return mapToResponse(updatedCustomer);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CustomerDto getCustomerDetails(Integer branchCode, Long customerId) throws OmniNGException {
+        Customer customer = getUniqueCustomer(tenantId, branchCode, customerId);
+        return mapToResponse(customer);
+    }
+
+    @Override
+    public void deleteCustomer(Integer branchCode, Long customerId) throws OmniNGException {
+        Customer customer = getUniqueCustomer(tenantId, branchCode, customerId);
+        if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
+            throw new OmniNGException("Customer already approved. so cannot be delete Customer");
+        }
+        customerRepository.delete(customer);
     }
 
     private CustomerDto mapToResponse(Customer customer) {

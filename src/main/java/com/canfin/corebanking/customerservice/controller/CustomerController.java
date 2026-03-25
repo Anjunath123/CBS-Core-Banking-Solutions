@@ -78,6 +78,27 @@ public class CustomerController {
         return ResponseEntity.ok(baseResponse);
     }
 
+    @GetMapping(value="/getCustomer", produces = "application/json")
+    public ResponseEntity<?> fetchCustomerDetails(@RequestParam Long customerId,
+                                            @RequestParam Integer branchCode){
+        BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
+        CustomerDto response = customerService.getCustomerDetails(branchCode,customerId);
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.OK.toString());
+            baseResponse.setSuccessMessage("Customer Fetched Successfully");
+        }
+        return ResponseEntity.ok(baseResponse);
+    }
+
+    @DeleteMapping(value="/deleteCustomer", produces = "application/json")
+    public ResponseEntity<String> deleteCustomer(@RequestParam Long customerId,
+                                                 @RequestParam Integer branchCode){
+
+        customerService.deleteCustomer(branchCode, customerId);
+        return ResponseEntity.ok("{\"message\": \"Customer Deleted Successfully\"}");
+    }
+
 }
 
 
