@@ -30,11 +30,9 @@ public class CustomerController {
         logger.info("inside saveCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.saveCustomer(request);
-        if (null != response) {
-            baseResponse.setData(response);
-            baseResponse.setSuccessCode(HttpStatus.CREATED.toString());
-            baseResponse.setSuccessMessage("Customer Registered Successfully");
-        }
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.CREATED.toString());
+        baseResponse.setSuccessMessage("Customer Registered Successfully");
         return ResponseEntity.ok(baseResponse);
     }
 
@@ -44,11 +42,9 @@ public class CustomerController {
         logger.info("inside updateCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.updateCustomer(request);
-        if (null != response) {
-            baseResponse.setData(response);
-            baseResponse.setSuccessCode(HttpStatus.OK.toString());
-            baseResponse.setSuccessMessage("Customer Updated Successfully");
-        }
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Customer Updated Successfully");
         return ResponseEntity.ok(baseResponse);
     }
 
@@ -57,11 +53,9 @@ public class CustomerController {
                                              @RequestParam Integer branchCode) {
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.approveCustomer(customerId,branchCode);
-        if (null != response) {
-            baseResponse.setData(response);
-            baseResponse.setSuccessCode(HttpStatus.OK.toString());
-            baseResponse.setSuccessMessage("Customer Approved Successfully");
-        }
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Customer Approved Successfully");
         return ResponseEntity.ok(baseResponse);
     }
 
@@ -70,24 +64,20 @@ public class CustomerController {
                                             @RequestParam Integer branchCode){
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.rejectCustomer(customerId,branchCode);
-        if (null != response) {
-            baseResponse.setData(response);
-            baseResponse.setSuccessCode(HttpStatus.OK.toString());
-            baseResponse.setSuccessMessage("Customer Rejected Successfully");
-        }
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Customer Rejected Successfully");
         return ResponseEntity.ok(baseResponse);
     }
 
     @GetMapping(value="/getCustomer", produces = "application/json")
     public ResponseEntity<?> fetchCustomerDetails(@RequestParam Long customerId,
-                                            @RequestParam Integer branchCode){
+                                                  @RequestParam Integer branchCode){
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.getCustomerDetails(branchCode,customerId);
-        if (null != response) {
-            baseResponse.setData(response);
-            baseResponse.setSuccessCode(HttpStatus.OK.toString());
-            baseResponse.setSuccessMessage("Customer Fetched Successfully");
-        }
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Customer Fetched Successfully");
         return ResponseEntity.ok(baseResponse);
     }
 
@@ -96,7 +86,7 @@ public class CustomerController {
                                                  @RequestParam Integer branchCode){
 
         customerService.deleteCustomer(branchCode, customerId);
-        return ResponseEntity.ok("{\"message\": \"Customer Deleted Successfully\"}");
+        return ResponseEntity.ok("message: Customer Deleted Successfully");
     }
 
 }

@@ -1,6 +1,7 @@
 package com.canfin.corebanking.customerservice.entity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class KycDocument {
@@ -23,10 +24,10 @@ public class KycDocument {
     private String docIdNum="";
 
     @Column(nullable = true)
-    private String issuedDate="";
+    private LocalDate issuedDate;
 
     @Column(nullable = true)
-    private String expiryDate="";
+    private LocalDate expiryDate;
 
     @Column(nullable = true,length=250)
     private String remarks = "";
@@ -61,19 +62,19 @@ public class KycDocument {
         this.docIdNum = docIdNum;
     }
 
-    public String getIssuedDate() {
+    public LocalDate getIssuedDate() {
         return issuedDate;
     }
 
-    public void setIssuedDate(String issuedDate) {
+    public void setIssuedDate(LocalDate issuedDate) {
         this.issuedDate = issuedDate;
     }
 
-    public String getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(String expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
