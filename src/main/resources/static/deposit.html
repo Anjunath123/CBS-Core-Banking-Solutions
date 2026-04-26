@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit Account - Core Banking</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="display:flex;justify-content:space-between;align-items:center;">Core Banking Service
+            <span style="font-size:13px;font-weight:400;"><span id="loggedInUser"></span> &nbsp;
+                <a onclick="doLogout()" style="color:#fff;cursor:pointer;text-decoration:underline;font-size:13px;">Logout</a>
+            </span>
+        </h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link active">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="create">Create FD Account</div>
+                    <div class="tab" data-tab="approve">Approve FD Account</div>
+                </div>
+
+                <!-- CREATE FD TAB -->
+                <div id="tab-create" class="tab-content active">
+                    <form id="depositForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">Account Information</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Branch Code</label>
+                                        <input type="number" id="branchCode" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Customer ID</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="customerId" required>
+                                            <button type="button" class="btn-f2" onclick="openCustomerLookup()">F2</button>
+                                        </div>
+                                        <span class="f2-hint">Press F2 or click button to search</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Account Name</label>
+                                        <input type="text" id="accountName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Product</label>
+                                        <input type="text" id="product" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Scheme</label>
+                                        <input type="text" id="scheme" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Mode of Operation</label>
+                                        <select id="modeOfOprn" required>
+                                            <option value="">Select</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Joint">Joint</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">Deposit Details</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Deposit Amount</label>
+                                        <input type="number" id="depositAmount" step="0.01" min="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Interest Rate (%)</label>
+                                        <input type="number" id="intRate" step="0.01" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Currency</label>
+                                        <input type="text" id="currencyCode" value="INR" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Deposit Months</label>
+                                        <input type="number" id="depositMonths" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Deposit Days</label>
+                                        <input type="number" id="depositDays" min="0" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Open Date</label>
+                                        <input type="date" id="openDate" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Interest Pay Frequency</label>
+                                        <select id="intPayFreq" required>
+                                            <option value="">Select</option>
+                                            <option value="Monthly">Monthly</option>
+                                            <option value="Quarterly">Quarterly</option>
+                                            <option value="HalfYearly">Half Yearly</option>
+                                            <option value="Yearly">Yearly</option>
+                                            <option value="OnMaturity">On Maturity</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Debit Account ID</label>
+                                        <input type="text" id="debitAccID" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Deposit Source</label>
+                                        <select id="depSource" required>
+                                            <option value="">Select</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Transfer">Transfer</option>
+                                            <option value="Cheque">Cheque</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Lock Period (months)</label>
+                                        <input type="number" id="lockPeriod" min="0" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Remarks</label>
+                                        <input type="text" id="remarks">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="createDeposit()">Create FD Account</button>
+                            <button type="reset" class="btn btn-outline">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- APPROVE FD TAB -->
+                <div id="tab-approve" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Approve FD Account</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Account Number</label>
+                                    <input type="text" id="approveAccountNumber">
+                                </div>
+                                <div class="form-group">
+                                    <label>Branch Code</label>
+                                    <input type="number" id="approveBranchCode">
+                                </div>
+                                <button class="btn btn-success" onclick="approveDeposit()">Approve</button>
+                            </div>
+                            <div id="approveResult"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Lookup Modal -->
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Select Approved Customer</span>
+                <button class="close-btn" onclick="closeCustomerLookup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="customerListContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/deposit.js"></script>
+</body>
+</html>

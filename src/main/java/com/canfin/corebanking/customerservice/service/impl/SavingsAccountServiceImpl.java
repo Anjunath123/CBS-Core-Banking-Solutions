@@ -1,6 +1,7 @@
 package com.canfin.corebanking.customerservice.service.impl;
 
 import com.canfin.corebanking.customerservice.constants.AppConstants;
+import com.canfin.corebanking.customerservice.config.CacheConfig;
 import com.canfin.corebanking.customerservice.dto.CreditDebitRequest;
 import com.canfin.corebanking.customerservice.dto.SavingsAccountDto;
 import com.canfin.corebanking.customerservice.entity.DepositAccountKey;
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +62,7 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheConfig.SAVINGS_ACCOUNT_CACHE, allEntries = true)
     public SavingsAccountDto approveSavingsAccount(String accountNumber, Integer branchCode) throws OmniNGException {
         SavingsAccount account = savingsAccountRepository.findByUniqueRecord(tenantId, branchCode, accountNumber)
                 .orElseThrow(() -> new OmniNGException("Savings account not found: " + accountNumber));
@@ -76,6 +80,7 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheConfig.SAVINGS_ACCOUNT_CACHE, allEntries = true)
     public SavingsAccountDto creditAmount(CreditDebitRequest request) throws OmniNGException {
         SavingsAccount account = savingsAccountRepository.findActiveAccount(tenantId, request.getBranchCode(), request.getAccountNumber(), AppConstants.ACTIVE, AppConstants.AUTH_APPROVED)
                 .orElseThrow(() -> new OmniNGException("Savings account " + request.getAccountNumber() + " not found or not active/approved."));
@@ -90,6 +95,7 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
     }
 
     @Override
+    @Cacheable(value = CacheConfig.SAVINGS_ACCOUNT_CACHE, key = "#branchCode + '_' + #accountNumber")
     public SavingsAccountDto getAccountDetails(String accountNumber, Integer branchCode) throws OmniNGException {
         SavingsAccount account = savingsAccountRepository.findByUniqueRecord(tenantId, branchCode, accountNumber)
                 .orElseThrow(() -> new OmniNGException("Savings account not found: " + accountNumber));

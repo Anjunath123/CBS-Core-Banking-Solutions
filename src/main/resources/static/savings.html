@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Account - Core Banking</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="display:flex;justify-content:space-between;align-items:center;">Core Banking Service
+            <span style="font-size:13px;font-weight:400;"><span id="loggedInUser"></span> &nbsp;
+                <a onclick="doLogout()" style="color:#fff;cursor:pointer;text-decoration:underline;font-size:13px;">Logout</a>
+            </span>
+        </h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link active">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="create">Create Account</div>
+                    <div class="tab" data-tab="approve">Approve</div>
+                    <div class="tab" data-tab="credit">Credit Amount</div>
+                    <div class="tab" data-tab="balance">Check Balance</div>
+                </div>
+
+                <!-- CREATE SAVINGS TAB -->
+                <div id="tab-create" class="tab-content active">
+                    <form id="savingsForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">Savings Account Details</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Branch Code</label>
+                                        <input type="number" id="branchCode" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Customer ID</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="customerId" required>
+                                            <button type="button" class="btn-f2" onclick="openCustomerLookup()">F2</button>
+                                        </div>
+                                        <span class="f2-hint">Press F2 or click button to search</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Account Name</label>
+                                        <input type="text" id="accountName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Product</label>
+                                        <input type="text" id="product" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Scheme</label>
+                                        <input type="text" id="scheme" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Currency</label>
+                                        <input type="text" id="currencyCode" value="INR" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Open Date</label>
+                                        <input type="date" id="openDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Minimum Balance</label>
+                                        <input type="number" id="minimumBalance" step="0.01" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="createSavings()">Create Savings Account</button>
+                            <button type="reset" class="btn btn-outline">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- APPROVE TAB -->
+                <div id="tab-approve" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Approve Savings Account</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Account Number</label>
+                                    <input type="text" id="approveAccNo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Branch Code</label>
+                                    <input type="number" id="approveBranch">
+                                </div>
+                                <button class="btn btn-success" onclick="approveSavings()">Approve</button>
+                            </div>
+                            <div id="approveResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CREDIT TAB -->
+                <div id="tab-credit" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Credit Amount</div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="required">Branch Code</label>
+                                    <input type="number" id="creditBranch">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Account Number</label>
+                                    <input type="text" id="creditAccNo">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Amount</label>
+                                    <input type="number" id="creditAmount" step="0.01" min="0.01">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Narration</label>
+                                    <input type="text" id="creditNarration">
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" onclick="creditAmount()">Credit</button>
+                            </div>
+                            <div id="creditResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BALANCE TAB -->
+                <div id="tab-balance" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Check Balance</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Account Number</label>
+                                    <input type="text" id="balAccNo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Branch Code</label>
+                                    <input type="number" id="balBranch">
+                                </div>
+                                <button class="btn btn-primary" onclick="checkBalance()">Check</button>
+                            </div>
+                            <div id="balanceResult"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Lookup Modal -->
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Select Approved Customer</span>
+                <button class="close-btn" onclick="closeCustomerLookup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="customerListContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/savings.js"></script>
+</body>
+</html>

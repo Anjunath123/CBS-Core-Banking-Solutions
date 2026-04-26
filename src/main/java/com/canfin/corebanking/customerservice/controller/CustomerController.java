@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -89,6 +90,15 @@ public class CustomerController {
         return ResponseEntity.ok("message: Customer Deleted Successfully");
     }
 
+    @GetMapping(value="/approvedCustomers", produces = "application/json")
+    public ResponseEntity<?> getApprovedCustomers(@RequestParam Integer branchCode){
+        BaseResponse<List<CustomerDto>> baseResponse=new BaseResponse<>();
+        List<CustomerDto> response = customerService.getApprovedCustomers(branchCode);
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Approved Customers Fetched Successfully");
+        return ResponseEntity.ok(baseResponse);
+    }
 }
 
 

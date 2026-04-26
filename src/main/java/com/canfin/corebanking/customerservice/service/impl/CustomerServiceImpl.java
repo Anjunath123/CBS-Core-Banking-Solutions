@@ -2,6 +2,7 @@ package com.canfin.corebanking.customerservice.service.impl;
 
 
 import com.canfin.corebanking.customerservice.constants.AppConstants;
+import com.canfin.corebanking.customerservice.config.CacheConfig;
 import com.canfin.corebanking.customerservice.dto.AddressDto;
 import com.canfin.corebanking.customerservice.dto.CustomerDto;
 import com.canfin.corebanking.customerservice.dto.KycDocumentDto;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -132,6 +135,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @CacheEvict(value = {CacheConfig.CUSTOMER_CACHE, CacheConfig.APPROVED_CUSTOMERS_CACHE}, allEntries = true)
     public CustomerDto approveCustomer(Long customerId, Integer branchCode) throws OmniNGException {
         Customer customer =getUniqueCustomer(tenantId, branchCode, customerId);
 
@@ -182,10 +186,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public Customer findByAuthorizedCustomer(Integer tenantId, Integer branchCode, Long customerId, Integer isActive, String customerStatus) throws OmniNGException {
         return customerRepository.findByAuthorizeCustomer(tenantId, branchCode, customerId, isActive, customerStatus)
-                .orElseThrow(() -> new OmniNGException("Customer not authorized"));
+                .orElseThrow(() -> new OmniNGException("Customer not Found"));
     }
 
     @Override
+    @CacheEvict(value = {CacheConfig.CUSTOMER_CACHE, CacheConfig.APPROVED_CUSTOMERS_CACHE}, allEntries = true)
     public CustomerDto rejectCustomer(Long customerId, Integer branchCode) throws OmniNGException {
         Customer customer =getUniqueCustomer(tenantId, branchCode, customerId);
         if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
@@ -222,6 +227,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @CacheEvict(value = {CacheConfig.CUSTOMER_CACHE, CacheConfig.APPROVED_CUSTOMERS_CACHE}, allEntries = true)
     public CustomerDto updateCustomer(CustomerDto request) throws OmniNGException {
         Customer customer =getUniqueCustomer(tenantId, request.getBranchCode(), request.getCustomerId());
         if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
@@ -306,14 +312,19 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.CUSTOMER_CACHE, key = "#branchCode + '_' + #customerId")
     public CustomerDto getCustomerDetails(Integer branchCode, Long customerId) throws OmniNGException {
         Customer customer = getUniqueCustomer(tenantId, branchCode, customerId);
         return mapToResponse(customer);
     }
 
     @Override
+    @CacheEvict(value = {CacheConfig.CUSTOMER_CACHE, CacheConfig.APPROVED_CUSTOMERS_CACHE}, allEntries = true)
     public void deleteCustomer(Integer branchCode, Long customerId) throws OmniNGException {
         Customer customer = getUniqueCustomer(tenantId, branchCode, customerId);
+        if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
+            throw new OmniNGException("Customer already approved");
+        }
         if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
             throw new OmniNGException("Customer already approved. so cannot be delete Customer");
         }
@@ -379,5 +390,24 @@ public class CustomerServiceImpl implements CustomerService {
             customerId=customerId+1;
         }
         return customerId;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.APPROVED_CUSTOMERS_CACHE, key = "#branchCode")
+    public List<CustomerDto> getApprovedCustomers(Integer branchCode) throws OmniNGException {
+        List<Customer> customers = customerRepository.findApprovedCustomers(
+                tenantId, branchCode, AppConstants.ACTIVE, CustomerType.APPROVED.toString());
+        return customers.stream().map(c -> {
+            CustomerDto dto = new CustomerDto();
+            dto.setCustomerId(c.getCustomerKey().getCustomerId());
+            dto.setBranchCode(c.getCustomerKey().getBranchCode());
+            dto.setMemberFName(c.getMemberFName());
+            dto.setMemberMName(c.getMemberMName());
+            dto.setMemberLName(c.getMemberLName());
+            dto.setPan(c.getPan());
+            dto.setCustomerStatus(c.getCustomerStatus());
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
