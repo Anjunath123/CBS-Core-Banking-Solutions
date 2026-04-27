@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Against FD - Core Banking</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="display:flex;justify-content:space-between;align-items:center;">Core Banking Service
+            <span style="font-size:13px;font-weight:400;"><span id="loggedInUser"></span> &nbsp;
+                <a onclick="doLogout()" style="color:#fff;cursor:pointer;text-decoration:underline;font-size:13px;">Logout</a>
+            </span>
+        </h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link active">Loan Against FD</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="create">Create Loan</div>
+                    <div class="tab" data-tab="approve">Approve Loan</div>
+                </div>
+
+                <!-- CREATE LOAN TAB -->
+                <div id="tab-create" class="tab-content active">
+                    <form id="loanForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">Loan Information</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Branch Code</label>
+                                        <input type="number" id="branchCode" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Customer ID</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="customerId" required>
+                                            <button type="button" class="btn-f2" onclick="openCustomerLookup()">F2</button>
+                                        </div>
+                                        <span class="f2-hint">Press F2 or click button to search</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Account Name</label>
+                                        <input type="text" id="accountName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">FD Account Number</label>
+                                        <input type="text" id="fdAccountNumber" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Loan Amount</label>
+                                        <input type="number" id="loanAmount" step="0.01" min="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Currency</label>
+                                        <input type="text" id="currencyCode" value="INR" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">Loan Details</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Loan Tenure (Months)</label>
+                                        <input type="number" id="loanTenureMonths" min="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Disbursement Date</label>
+                                        <input type="date" id="disbursementDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Loan Purpose</label>
+                                        <select id="loanPurpose" required>
+                                            <option value="">Select</option>
+                                            <option value="Personal">Personal</option>
+                                            <option value="Business">Business</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Medical">Medical</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Repayment Mode</label>
+                                        <select id="repaymentMode" required>
+                                            <option value="">Select</option>
+                                            <option value="EMI">EMI</option>
+                                            <option value="BulletPayment">Bullet Payment</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Repayment Account No</label>
+                                        <input type="text" id="repaymentAccountNumber" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Remarks</label>
+                                        <input type="text" id="remarks">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="createLoan()">Create Loan Against FD</button>
+                            <button type="reset" class="btn btn-outline">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- APPROVE LOAN TAB -->
+                <div id="tab-approve" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Approve Loan Against FD</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="approveLoanAccNo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Branch Code</label>
+                                    <input type="number" id="approveBranchCode">
+                                </div>
+                                <button class="btn btn-success" onclick="approveLoan()">Approve</button>
+                            </div>
+                            <div id="approveResult"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Lookup Modal -->
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Select Approved Customer</span>
+                <button class="close-btn" onclick="closeCustomerLookup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="customerListContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/loan-against-fd.js"></script>
+</body>
+</html>
