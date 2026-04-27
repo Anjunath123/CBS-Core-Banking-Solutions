@@ -1,13 +1,14 @@
 package com.canfin.corebanking.customerservice.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,7 +25,8 @@ public class CustomerDto {
     private String pan="";
     private String custCategory="";
     private String customerType="";
-    private Date dateOfBirth;
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private LocalDate dateOfBirth;
     private String gender="";
     private String residentStatus="";
     private Integer isActive;
@@ -35,6 +37,8 @@ public class CustomerDto {
     private List<AddressDto> addresses=new ArrayList<>();
 
     private List<KycDocumentDto> kycDocumentDtoList=new ArrayList<>();
+
+    private List<CustomerBankInfoDto> customerBankInfoDtoList=new ArrayList<>();
 
     public Integer getTenantId() {
         return tenantId;
@@ -116,11 +120,11 @@ public class CustomerDto {
         this.dateOfBirth = dateOfBirth;
     }*/
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -186,5 +190,13 @@ public class CustomerDto {
 
     public void setKycDocumentDtoList(List<KycDocumentDto> kycDocumentDtoList) {
         this.kycDocumentDtoList = kycDocumentDtoList;
+    }
+
+    public List<CustomerBankInfoDto> getCustomerBankInfoDtoList() {
+        return customerBankInfoDtoList;
+    }
+
+    public void setCustomerBankInfoDtoList(List<CustomerBankInfoDto> customerBankInfoDtoList) {
+        this.customerBankInfoDtoList = customerBankInfoDtoList;
     }
 }

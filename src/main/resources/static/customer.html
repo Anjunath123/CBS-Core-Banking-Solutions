@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Customer - Core Banking</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="display:flex;justify-content:space-between;align-items:center;">Core Banking Service
+            <span style="font-size:13px;font-weight:400;"><span id="loggedInUser"></span> &nbsp;
+                <a onclick="doLogout()" style="color:#fff;cursor:pointer;text-decoration:underline;font-size:13px;">Logout</a>
+            </span>
+        </h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link active">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="create">Create Customer</div>
+                    <div class="tab" data-tab="search">Search Customer</div>
+                </div>
+
+                <!-- CREATE CUSTOMER TAB -->
+                <div id="tab-create" class="tab-content active">
+                    <form id="customerForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">Personal Information</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div id="divBranchCode" class="form-group" form-readonly>
+                                        <label class="required">Branch Code</label>
+                                        <input type="number" id="branchCode" value="101" readonly="true" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">First Name</label>
+                                        <input type="text" id="memberFName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Middle Name</label>
+                                        <input type="text" id="memberMName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Last Name</label>
+                                        <input type="text" id="memberLName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">PAN</label>
+                                        <input type="text" id="pan" maxlength="10" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Valid PAN format: ABCDE1234F">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Date of Birth</label>
+                                        <input type="date" id="dateOfBirth" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Gender</label>
+                                        <select id="gender" required>
+                                            <option value="">Select</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                            <option value="O">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Resident Status</label>
+                                        <select id="residentStatus">
+                                            <option value="Resident">Resident</option>
+                                            <option value="NRI">NRI</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Customer Category</label>
+                                        <select id="custCategory">
+                                            <option value="Individual">Individual</option>
+                                            <option value="Corporate">Corporate</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Customer Type</label>
+                                        <select id="customerType">
+                                            <option value="Regular">Regular</option>
+                                            <option value="Premium">Premium</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                Address Details
+                                <button type="button" class="btn btn-sm btn-outline" onclick="addAddressRow()" style="color:#fff;border-color:#fff;">+ Add Address</button>
+                            </div>
+                            <div class="card-body" style="overflow-x:auto;">
+                                <table id="addressTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th><th>Address Line 1</th><th>Address Line 2</th><th>City</th><th>State</th><th>Country</th><th>PIN Code</th><th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="addressBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                KYC Documents
+                                <button type="button" class="btn btn-sm btn-outline" onclick="addKycRow()" style="color:#fff;border-color:#fff;">+ Add Document</button>
+                            </div>
+                            <div class="card-body" style="overflow-x:auto;">
+                                <table id="kycTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Doc Type</th><th>Doc ID Number</th><th>Name as in Doc</th><th>Issued Date</th><th>Expiry Date</th><th>Remarks</th><th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kycBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                Bank Account Details
+                                <button type="button" class="btn btn-sm btn-outline" onclick="addBankRow()" style="color:#fff;border-color:#fff;">+ Add Bank Account</button>
+                            </div>
+                            <div class="card-body" style="overflow-x:auto;">
+                                <table id="bankTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Account Holder</th><th>Account No</th><th>IFSC</th><th>Bank Name</th><th>Branch</th><th>Payment Mode</th><th>Primary</th><th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bankBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="submitCustomer()">Save Customer</button>
+                            <button type="reset" class="btn btn-outline" onclick="resetForm()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- SEARCH CUSTOMER TAB -->
+                <div id="tab-search" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">Search Customer</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Customer ID</label>
+                                    <input type="number" id="searchCustomerId">
+                                </div>
+                                <div class="form-group">
+                                    <label>Branch Code</label>
+                                    <input type="number" id="searchBranchCode">
+                                </div>
+                                <button class="btn btn-primary" onclick="searchCustomer()">Search</button>
+                            </div>
+                            <div id="searchResult" style="display:none;">
+                                <div id="customerDetails"></div>
+                                <div class="actions">
+                                    <button class="btn btn-success" onclick="approveCustomer()">Approve</button>
+                                    <button class="btn btn-danger" onclick="rejectCustomer()">Reject</button>
+                                    <button class="btn btn-danger" style="background:#718096;" onclick="deleteCustomer()">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/customer.js"></script>
+</body>
+</html>
