@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Customer - Core Banking</title>
+    <title>Create Customer - Core Banking Solutions</title>
     <link rel="stylesheet" href="css/common.css">
     <script src="js/auth.js"></script>
     <style>
@@ -17,11 +17,7 @@
 </head>
 <body>
     <div class="header">
-        <h1 style="display:flex;justify-content:space-between;align-items:center;">Core Banking Service
-            <span style="font-size:13px;font-weight:400;"><span id="loggedInUser"></span> &nbsp;
-                <a onclick="doLogout()" style="color:#fff;cursor:pointer;text-decoration:underline;font-size:13px;">Logout</a>
-            </span>
-        </h1>
+        <h1><img src="img/bank-logo.svg" class="bank-logo" alt="Bank Logo"> Core Banking Solutions</h1>
     </div>
 
     <div class="layout">
@@ -31,6 +27,13 @@
                 <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
                 <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
                 <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+                <a href="/Kiya.aiCBS-10.2.0/home-loan" class="nav-link">Home Loan</a>
+                <div style="color:#fff;padding:14px 24px;font-size:14px;font-weight:600;">Admin</div>
+                <a href="/Kiya.aiCBS-10.2.0/branch-master" class="nav-link" style="padding-left:36px;font-size:13px;">Branch Master</a>
+                <div style="margin-top:auto;padding:14px 24px;border-top:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#a0b4cc;font-size:12px;" id="loggedInUser"></span>
+                    <a onclick="doLogout()" class="nav-link" style="color:#e53e3e;font-size:13px;padding:8px 0;">&#x2190; Logout</a>
+                </div>
             </nav>
         </div>
 
@@ -50,7 +53,11 @@
                                 <div class="form-row">
                                     <div id="divBranchCode" class="form-group" form-readonly>
                                         <label class="required">Branch Code</label>
-                                        <input type="number" id="branchCode" value="101" readonly="true" required>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="branchCode" value="101" readonly="true" required>
+                                            <button type="button" class="btn-f2" onclick="openBranchLookup(function(code){document.getElementById('branchCode').value=code;})">F2</button>
+                                        </div>
+                                        <span class="f2-hint">Press F2 or click button to search branch</span>
                                     </div>
                                     <div class="form-group">
                                         <label class="required">First Name</label>
@@ -200,6 +207,21 @@
     </div>
 
     <div id="toast" class="toast"></div>
+
+    <!-- Branch Lookup Modal -->
+    <div id="branchLookupModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Select Branch (F2)</span>
+                <button class="close-btn" onclick="closeBranchLookup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="branchLookupContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/branch-lookup.js"></script>
     <script src="js/customer.js"></script>
 </body>
 </html>

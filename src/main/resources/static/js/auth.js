@@ -6,21 +6,12 @@ if (!token) {
     window.location.href = CTX + '/login.html';
 }
 
-// Display logged-in user in header
-var header = document.querySelector('.header');
-if (header) {
+// Display logged-in user in sidebar
+var userEl = document.getElementById('loggedInUser');
+if (userEl) {
     var displayName = localStorage.getItem('fullName');
-    if (!displayName) {
-        displayName = localStorage.getItem('username');
-    }
-    if (!displayName) {
-        displayName = '';
-    }
-    var userInfo = document.createElement('div');
-    userInfo.style.cssText = 'margin-left:auto;display:flex;align-items:center;gap:12px;color:#fff;font-size:13px;';
-    userInfo.innerHTML = '<span>' + displayName + '</span>' +
-        '<button onclick="doLogout()" style="background:#e53e3e;color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;">Logout</button>';
-    header.appendChild(userInfo);
+    if (!displayName) displayName = localStorage.getItem('username');
+    if (displayName) userEl.textContent = displayName;
 }
 
 // Logout
@@ -91,12 +82,26 @@ window.fetch = function(url, options) {
             }
         }
         if (response.status === 403) {
-            doLogout();
+            // Don't logout - show access denied message
+            showAccessDenied();
             return response;
         }
         return response;
     });
 };
+
+// Show access denied toast/alert
+function showAccessDenied() {
+    var toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = 'Access Denied: You don\'t have permission for this action';
+        toast.className = 'toast toast-error';
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 4000);
+    } else {
+        alert('Access Denied: You don\'t have permission for this action');
+    }
+}
 
 // Keep authFetch as alias for backward compatibility
 function authFetch(url, options) {

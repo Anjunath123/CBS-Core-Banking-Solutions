@@ -60,6 +60,10 @@ public class JwtUtil {
         return getClaims(token).getSubject();
     }
 
+    public String getRole(String token) {
+        return (String) getClaims(token).get("role");
+    }
+
     public String getTokenType(String token) {
         return (String) getClaims(token).get(TOKEN_TYPE_CLAIM);
     }

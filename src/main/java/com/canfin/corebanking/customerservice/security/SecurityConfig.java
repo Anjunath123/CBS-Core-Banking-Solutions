@@ -2,6 +2,8 @@ package com.canfin.corebanking.customerservice.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -26,11 +29,13 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-                .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/*.html", "/css/**", "/js/**").permitAll()
-                .antMatchers("/login", "/customer", "/deposit", "/savings", "/loan-against-fd").permitAll()
+                .antMatchers("/api/v1/auth/**", "/api/v1/ai/**", "/api/v1/openai/**").permitAll()
+                .antMatchers("/*.html", "/css/**", "/js/**", "/img/**").permitAll()
+                .antMatchers("/login", "/customer", "/deposit", "/savings", "/loan-against-fd", "/branch-master", "/home-loan").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+
+                // All other authenticated APIs
                 .antMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
             .and()

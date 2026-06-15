@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class CustomerController {
 
 
     @PostMapping(value="/saveCustomer", consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> saveCustomer(@Valid @RequestBody CustomerDto request) {
         logger.info("inside saveCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
@@ -39,6 +41,7 @@ public class CustomerController {
 
 
     @PostMapping(value="/updateCustomer", consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerDto request) {
         logger.info("inside updateCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
@@ -50,6 +53,7 @@ public class CustomerController {
     }
 
     @PutMapping(value="/approveCustomer", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN,USER')")
     public ResponseEntity<?> approveCustomer(@RequestParam Long customerId,
                                              @RequestParam Integer branchCode) {
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
@@ -61,6 +65,7 @@ public class CustomerController {
     }
 
     @PutMapping(value="/rejectCustomer", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> rejectCustomer(@RequestParam Long customerId,
                                             @RequestParam Integer branchCode){
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
@@ -83,6 +88,7 @@ public class CustomerController {
     }
 
     @DeleteMapping(value="/deleteCustomer", produces = "application/json")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> deleteCustomer(@RequestParam Long customerId,
                                                  @RequestParam Integer branchCode){
 

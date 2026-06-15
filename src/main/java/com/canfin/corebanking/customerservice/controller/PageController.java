@@ -30,4 +30,14 @@ public class PageController {
     public String loanAgainstFD() {
         return "forward:/loan-against-fd.html";
     }
+
+    @GetMapping("/branch-master")
+    public String branchMaster() {
+        return "forward:/branch-master.html";
+    }
+
+    @GetMapping("/home-loan")
+    public String homeLoan() {
+        return "forward:/home-loan.html";
+    }
 }
