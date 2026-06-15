@@ -22,4 +22,5 @@ public interface CustomerService {
 
     public void deleteCustomer(Integer branchCode,Long customerId) throws OmniNGException;
 
+    public java.util.List<CustomerDto> getApprovedCustomers(Integer branchCode) throws OmniNGException;
 }

@@ -129,7 +129,7 @@ public class DepositAccount implements Serializable {
 
 
     //@Column(nullable = true, columnDefinition = "nvarchar(1)")
-    @Column(nullable = true, length=1)
+    @Column(nullable = true, length=50)
     private String intPayFreq = "";
 
     @Column(nullable = true)

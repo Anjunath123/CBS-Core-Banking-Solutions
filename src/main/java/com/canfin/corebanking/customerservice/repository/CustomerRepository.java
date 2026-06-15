@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,4 +30,9 @@ public interface CustomerRepository extends JpaRepository<Customer, CustomerKey>
                                                 @Param("isActive") Integer isActive,
                                                 @Param("customerStatus") String customerStatus);
 
+    @Query("SELECT c FROM Customer c WHERE c.customerKey.tenantId=:tenantId and c.customerKey.branchCode=:branchCode and c.isActive=:isActive and c.customerStatus=:customerStatus")
+    List<Customer> findApprovedCustomers(@Param("tenantId") Integer tenantId,
+                                         @Param("branchCode") Integer branchCode,
+                                         @Param("isActive") Integer isActive,
+                                         @Param("customerStatus") String customerStatus);
 }
