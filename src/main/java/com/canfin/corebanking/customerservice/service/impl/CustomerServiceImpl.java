@@ -99,8 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
                  throw new OmniNGException("Customer Cannot be Adding More than 3 Bank Accounts");
             }
             // ✅ Rule 2: At least one primary account (isPrimary = 1)
-            boolean hasPrimary = bankList.stream()
-                    .anyMatch(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1);
+            boolean hasPrimary = bankList.stream().anyMatch(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1);
             if (!hasPrimary) {
                 throw new OmniNGException("At least one primary bank account is required");
             }
