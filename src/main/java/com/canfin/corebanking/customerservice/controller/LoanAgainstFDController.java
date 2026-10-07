@@ -25,8 +25,7 @@ public class LoanAgainstFDController {
     public ResponseEntity<?> createLoan(@Valid @RequestBody LoanAgainstFDDto request) {
         logger.info("createLoanAgainstFD API request {}", request);
         LoanAgainstFDDto result = loanAgainstFDService.createLoanAgainstFD(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new BaseResponse<>(result, HttpStatus.CREATED.toString(), "Loan Against FD Created Successfully"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result, HttpStatus.CREATED.toString(), "Loan Against FD Created Successfully"));
     }
 
     @PutMapping("/approve")

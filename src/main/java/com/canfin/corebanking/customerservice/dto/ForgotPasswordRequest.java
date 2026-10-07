@@ -1,6 +1,6 @@
 package com.canfin.corebanking.customerservice.dto;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
 public class ForgotPasswordRequest {
     @NotBlank(message = "Username is required")

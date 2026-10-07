@@ -1,5 +1,6 @@
 package com.canfin.corebanking.customerservice.entity;
 
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;

@@ -17,6 +17,9 @@ public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, 
     @Query("SELECT s FROM SavingsAccount s WHERE s.savingsAccountKey.tenantId = ?1 AND s.savingsAccountKey.branchCode = ?2 AND s.savingsAccountKey.accountNumber = ?3")
     Optional<SavingsAccount> findByUniqueRecord(Integer tenantId, Integer branchCode, String accountNumber);
 
+    @Query("SELECT s FROM SavingsAccount s WHERE s.savingsAccountKey.tenantId = ?1 AND s.savingsAccountKey.branchCode = ?2 AND s.customerId = ?3 AND s.isActive = 1")
+    java.util.List<SavingsAccount> findByCustomer(Integer tenantId, Integer branchCode, Long customerId);
+
     @Query("SELECT MAX(s.savingsAccountKey.accountNumber) FROM SavingsAccount s WHERE s.savingsAccountKey.tenantId = ?1 AND s.savingsAccountKey.branchCode = ?2")
     String findMaxAccountNumber(Integer tenantId, Integer branchCode);
 }

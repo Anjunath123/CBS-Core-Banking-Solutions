@@ -4,6 +4,8 @@ import com.canfin.corebanking.customerservice.dto.CustomerDto;
 import com.canfin.corebanking.customerservice.entity.Customer;
 import com.canfin.corebanking.customerservice.exception.OmniNGException;
 
+import java.util.List;
+
 public interface CustomerService {
 
     public CustomerDto saveCustomer(CustomerDto request) throws OmniNGException;
@@ -23,4 +25,6 @@ public interface CustomerService {
     public void deleteCustomer(Integer branchCode,Long customerId) throws OmniNGException;
 
     public java.util.List<CustomerDto> getApprovedCustomers(Integer branchCode) throws OmniNGException;
+
+    List<CustomerDto> getAllCustomer() throws OmniNGException;
 }

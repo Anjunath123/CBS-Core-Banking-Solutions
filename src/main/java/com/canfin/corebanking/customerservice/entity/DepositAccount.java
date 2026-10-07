@@ -1,6 +1,10 @@
 package com.canfin.corebanking.customerservice.entity;
 
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
