@@ -1,7 +1,6 @@
 package com.canfin.corebanking.customerservice.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,9 +43,8 @@ public class Customer extends Base implements Serializable {
     @Column(nullable = false,length = 10)
     private String gender="";
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(nullable = true)
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
 
     @Column(nullable = true,length = 12)
     private String mobileNumber="";
@@ -73,9 +70,6 @@ public class Customer extends Base implements Serializable {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<KycDocument> kycDocumentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<CustomerBankInfo> customerBankInfoList=new ArrayList<>();
-
     public void addAddress(Address address) {
         if(null==addressList){
             addressList=new ArrayList<>();
@@ -90,11 +84,6 @@ public class Customer extends Base implements Serializable {
         }
         kycDocumentList.add(kycDocument);
         kycDocument.setCustomer(this);
-    }
-
-    public void addCustomerBankInfo(CustomerBankInfo customerBankInfo){
-        customerBankInfoList.add(customerBankInfo);
-        customerBankInfo.setCustomer(this);
     }
 
     public CustomerKey getCustomerKey() {
@@ -169,19 +158,11 @@ public class Customer extends Base implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }*/
 
-/*    public Date getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }*/
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -247,13 +228,5 @@ public class Customer extends Base implements Serializable {
 
     public void setKycDocumentList(List<KycDocument> kycDocumentList) {
         this.kycDocumentList = kycDocumentList;
-    }
-
-    public List<CustomerBankInfo> getCustomerBankInfoList() {
-        return customerBankInfoList;
-    }
-
-    public void setCustomerBankInfoList(List<CustomerBankInfo> customerBankInfoList) {
-        this.customerBankInfoList = customerBankInfoList;
     }
 }

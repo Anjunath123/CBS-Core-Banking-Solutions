@@ -10,11 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -28,83 +26,79 @@ public class CustomerController {
 
 
     @PostMapping(value="/saveCustomer", consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> saveCustomer(@Valid @RequestBody CustomerDto request) {
         logger.info("inside saveCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.saveCustomer(request);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.CREATED.toString());
-        baseResponse.setSuccessMessage("Customer Registered Successfully");
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.CREATED.toString());
+            baseResponse.setSuccessMessage("Customer Registered Successfully");
+        }
         return ResponseEntity.ok(baseResponse);
     }
 
 
     @PostMapping(value="/updateCustomer", consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerDto request) {
         logger.info("inside updateCustomer API: {}", request);
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.updateCustomer(request);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.OK.toString());
-        baseResponse.setSuccessMessage("Customer Updated Successfully");
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.OK.toString());
+            baseResponse.setSuccessMessage("Customer Updated Successfully");
+        }
         return ResponseEntity.ok(baseResponse);
     }
 
     @PutMapping(value="/approveCustomer", produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN,USER')")
     public ResponseEntity<?> approveCustomer(@RequestParam Long customerId,
                                              @RequestParam Integer branchCode) {
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.approveCustomer(customerId,branchCode);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.OK.toString());
-        baseResponse.setSuccessMessage("Customer Approved Successfully");
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.OK.toString());
+            baseResponse.setSuccessMessage("Customer Approved Successfully");
+        }
         return ResponseEntity.ok(baseResponse);
     }
 
     @PutMapping(value="/rejectCustomer", produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> rejectCustomer(@RequestParam Long customerId,
                                             @RequestParam Integer branchCode){
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.rejectCustomer(customerId,branchCode);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.OK.toString());
-        baseResponse.setSuccessMessage("Customer Rejected Successfully");
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.OK.toString());
+            baseResponse.setSuccessMessage("Customer Rejected Successfully");
+        }
         return ResponseEntity.ok(baseResponse);
     }
 
     @GetMapping(value="/getCustomer", produces = "application/json")
     public ResponseEntity<?> fetchCustomerDetails(@RequestParam Long customerId,
-                                                  @RequestParam Integer branchCode){
+                                            @RequestParam Integer branchCode){
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
         CustomerDto response = customerService.getCustomerDetails(branchCode,customerId);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.OK.toString());
-        baseResponse.setSuccessMessage("Customer Fetched Successfully");
+        if (null != response) {
+            baseResponse.setData(response);
+            baseResponse.setSuccessCode(HttpStatus.OK.toString());
+            baseResponse.setSuccessMessage("Customer Fetched Successfully");
+        }
         return ResponseEntity.ok(baseResponse);
     }
 
     @DeleteMapping(value="/deleteCustomer", produces = "application/json")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> deleteCustomer(@RequestParam Long customerId,
                                                  @RequestParam Integer branchCode){
 
         customerService.deleteCustomer(branchCode, customerId);
-        return ResponseEntity.ok("message: Customer Deleted Successfully");
+        return ResponseEntity.ok("{\"message\": \"Customer Deleted Successfully\"}");
     }
 
-    @GetMapping(value="/approvedCustomers", produces = "application/json")
-    public ResponseEntity<?> getApprovedCustomers(@RequestParam Integer branchCode){
-        BaseResponse<List<CustomerDto>> baseResponse=new BaseResponse<>();
-        List<CustomerDto> response = customerService.getApprovedCustomers(branchCode);
-        baseResponse.setData(response);
-        baseResponse.setSuccessCode(HttpStatus.OK.toString());
-        baseResponse.setSuccessMessage("Approved Customers Fetched Successfully");
-        return ResponseEntity.ok(baseResponse);
-    }
 }
 
 

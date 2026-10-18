@@ -151,7 +151,6 @@ public class DepositAccountDto {
     private String agentCode = "";
 
     
-    @NotBlank(message = "Debit account ID is required")
     private String debitAccID ="";
 
 

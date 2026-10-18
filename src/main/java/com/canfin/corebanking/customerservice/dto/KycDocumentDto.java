@@ -1,9 +1,5 @@
 package com.canfin.corebanking.customerservice.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDate;
-
 public class KycDocumentDto {
 
     private Integer srNo;
@@ -12,11 +8,8 @@ public class KycDocumentDto {
 
     private String docIdNum="";
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate issuedDate;
-
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate expiryDate;
+    private String issuedDate="";
+    private String expiryDate="";
 
     private String remarks = "";
 
@@ -40,7 +33,7 @@ public class KycDocumentDto {
         this.docIdNum = docIdNum;
     }
 
-/*    public String getIssuedDate() {
+    public String getIssuedDate() {
         return issuedDate;
     }
 
@@ -53,22 +46,6 @@ public class KycDocumentDto {
     }
 
     public void setExpiryDate(String expiryDate) {
-        this.expiryDate = expiryDate;
-    }*/
-
-    public LocalDate getIssuedDate() {
-        return issuedDate;
-    }
-
-    public void setIssuedDate(LocalDate issuedDate) {
-        this.issuedDate = issuedDate;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
