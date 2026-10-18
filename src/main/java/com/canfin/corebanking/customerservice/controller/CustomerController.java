@@ -53,7 +53,7 @@ public class CustomerController {
     }
 
     @PutMapping(value="/approveCustomer", produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN,USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<?> approveCustomer(@RequestParam Long customerId,
                                              @RequestParam Integer branchCode) {
         BaseResponse<CustomerDto> baseResponse=new BaseResponse<>();
@@ -94,6 +94,16 @@ public class CustomerController {
 
         customerService.deleteCustomer(branchCode, customerId);
         return ResponseEntity.ok("message: Customer Deleted Successfully");
+    }
+
+    @GetMapping(value="/getAllCustomer", produces = "application/json")
+    public ResponseEntity<?> getAllCustomer(){
+        BaseResponse<List<CustomerDto>> baseResponse=new BaseResponse<>();
+        List<CustomerDto> response = customerService.getAllCustomer();
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("Customer Fetched Successfully");
+        return ResponseEntity.ok(baseResponse);
     }
 
     @GetMapping(value="/approvedCustomers", produces = "application/json")

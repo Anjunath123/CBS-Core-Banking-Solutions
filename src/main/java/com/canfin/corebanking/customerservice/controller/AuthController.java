@@ -2,12 +2,13 @@ package com.canfin.corebanking.customerservice.controller;
 
 import com.canfin.corebanking.customerservice.dto.*;
 import com.canfin.corebanking.customerservice.service.AuthService;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.util.Map;
 
 @RestController

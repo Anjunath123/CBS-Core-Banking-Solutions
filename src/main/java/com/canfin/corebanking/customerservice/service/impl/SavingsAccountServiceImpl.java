@@ -1,7 +1,7 @@
 package com.canfin.corebanking.customerservice.service.impl;
 
-import com.canfin.corebanking.customerservice.constants.AppConstants;
 import com.canfin.corebanking.customerservice.config.CacheConfig;
+import com.canfin.corebanking.customerservice.constants.AppConstants;
 import com.canfin.corebanking.customerservice.dto.CreditDebitRequest;
 import com.canfin.corebanking.customerservice.dto.SavingsAccountDto;
 import com.canfin.corebanking.customerservice.entity.DepositAccountKey;
@@ -100,6 +100,12 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
         SavingsAccount account = savingsAccountRepository.findByUniqueRecord(tenantId, branchCode, accountNumber)
                 .orElseThrow(() -> new OmniNGException("Savings account not found: " + accountNumber));
         return mapToDto(account);
+    }
+
+    @Override
+    public java.util.List<SavingsAccountDto> getAccountsByCustomer(Integer branchCode, Long customerId) throws OmniNGException {
+        return savingsAccountRepository.findByCustomer(tenantId, branchCode, customerId)
+                .stream().map(this::mapToDto).collect(java.util.stream.Collectors.toList());
     }
 
     private String generateAccountNumber(Integer branchCode) {

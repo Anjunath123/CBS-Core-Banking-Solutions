@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/loan-against-fd")
@@ -25,8 +26,7 @@ public class LoanAgainstFDController {
     public ResponseEntity<?> createLoan(@Valid @RequestBody LoanAgainstFDDto request) {
         logger.info("createLoanAgainstFD API request {}", request);
         LoanAgainstFDDto result = loanAgainstFDService.createLoanAgainstFD(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new BaseResponse<>(result, HttpStatus.CREATED.toString(), "Loan Against FD Created Successfully"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result, HttpStatus.CREATED.toString(), "Loan Against FD Created Successfully"));
     }
 
     @PutMapping("/approve")
@@ -39,4 +39,14 @@ public class LoanAgainstFDController {
         baseResponse.setSuccessMessage("Loan Against FD Approved Successfully");
         return ResponseEntity.ok(baseResponse);
     }
+    @GetMapping(value = "/getAllLoanAgainstFD", produces = "application/json" )
+    public ResponseEntity<?> getAllLoanAgainstFD(){
+        BaseResponse<List<LoanAgainstFDDto>> baseResponse=new BaseResponse<>();
+        List<LoanAgainstFDDto> response=loanAgainstFDService.getAllLoanAgainstFD();
+        baseResponse.setData(response);
+        baseResponse.setSuccessCode(HttpStatus.OK.toString());
+        baseResponse.setSuccessMessage("LoanAgainstFD fetched Successfully");
+        return ResponseEntity.ok(baseResponse);
+    }
+
 }

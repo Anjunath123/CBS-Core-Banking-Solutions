@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = OmniNGException.class, readOnly = true)
@@ -127,6 +129,12 @@ public class LoanAgainstFDServiceImpl implements LoanAgainstFDService {
         loan = loanAgainstFDRepository.save(loan);
 
         return mapToResponse(loan);
+    }
+
+    @Override
+    public List<LoanAgainstFDDto> getAllLoanAgainstFD() throws OmniNGException {
+        List<LoanAgainstFD> loans = loanAgainstFDRepository.findAll();
+        return loans.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     private String generateLoanAccountNumber(Integer tenantId, Integer branchCode) {

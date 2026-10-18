@@ -1,7 +1,13 @@
 package com.canfin.corebanking.customerservice.dto;
 
 import javax.persistence.Transient;
-import javax.validation.constraints.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+
+
 import java.util.Date;
 
 public class DepositAccountDto {
