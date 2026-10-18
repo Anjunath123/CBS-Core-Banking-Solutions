@@ -4,6 +4,7 @@ import com.canfin.corebanking.customerservice.dto.BaseResponse;
 import com.canfin.corebanking.customerservice.dto.CreditDebitRequest;
 import com.canfin.corebanking.customerservice.dto.SavingsAccountDto;
 import com.canfin.corebanking.customerservice.service.SavingsAccountService;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/savings")
@@ -49,5 +52,12 @@ public class SavingsAccountController {
         logger.info("getBalance API request for account {}", accountNumber);
         SavingsAccountDto response = savingsAccountService.getAccountDetails(accountNumber, branchCode);
         return ResponseEntity.ok(new BaseResponse<>(response, HttpStatus.OK.toString(), "Balance fetched successfully"));
+    }
+
+    @GetMapping("/byCustomer")
+    public ResponseEntity<?> getAccountsByCustomer(@RequestParam Integer branchCode, @RequestParam Long customerId) {
+        logger.info("getAccountsByCustomer for branchCode={} customerId={}", branchCode, customerId);
+        List<SavingsAccountDto> response = savingsAccountService.getAccountsByCustomer(branchCode, customerId);
+        return ResponseEntity.ok(new BaseResponse<>(response, HttpStatus.OK.toString(), "Savings accounts fetched successfully"));
     }
 }

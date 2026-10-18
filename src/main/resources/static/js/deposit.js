@@ -90,8 +90,16 @@ async function approveDeposit() {
 
 // F2 Customer Lookup
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'F2') { e.preventDefault(); openCustomerLookup(); }
-    if (e.key === 'Escape') closeCustomerLookup();
+    if (e.key === 'F2') {
+        e.preventDefault();
+        const active = document.activeElement;
+        if (active && active.id === 'debitAccID') {
+            openSavingsLookup();
+        } else {
+            openCustomerLookup();
+        }
+    }
+    if (e.key === 'Escape') { closeCustomerLookup(); closeSavingsLookup(); }
 });
 
 async function openCustomerLookup() {
@@ -135,4 +143,51 @@ function selectCustomer(customerId, customerName) {
 
 function closeCustomerLookup() {
     document.getElementById('customerModal').classList.remove('show');
+}
+
+// F2 Savings Account Lookup for Debit Account ID
+async function openSavingsLookup() {
+    const branchCode = document.getElementById('branchCode').value;
+    const customerId = document.getElementById('customerId').value;
+    if (!branchCode) { showToast('Enter Branch Code first', 'error'); return; }
+    if (!customerId) { showToast('Enter Customer ID first', 'error'); return; }
+
+    const modal = document.getElementById('savingsModal');
+    modal.classList.add('show');
+    document.getElementById('savingsListContent').innerHTML = 'Loading...';
+
+    try {
+        const res = await authFetch(CTX + '/api/v1/savings/byCustomer?branchCode=' + branchCode + '&customerId=' + customerId);
+        const data = await res.json();
+        const accounts = Array.isArray(data.data) ? data.data : (data.data ? [data.data] : []);
+        if (accounts.length > 0) {
+            let html = `<table>
+                <thead><tr><th>Account Number</th><th>Account Name</th><th>Balance</th><th>Status</th></tr></thead>
+                <tbody>`;
+            accounts.forEach(a => {
+                html += `<tr onclick="selectSavingsAccount('${a.accountNumber}', '${a.accountName}')">
+                    <td>${a.accountNumber}</td>
+                    <td>${a.accountName}</td>
+                    <td>${a.availableBalance}</td>
+                    <td>${a.authStatus}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('savingsListContent').innerHTML = html;
+        } else {
+            document.getElementById('savingsListContent').innerHTML = '<p style="text-align:center;color:#718096;padding:20px;">No savings accounts found for this customer</p>';
+        }
+    } catch (e) {
+        document.getElementById('savingsListContent').innerHTML = '<p style="color:#e53e3e;padding:20px;">Error loading savings accounts</p>';
+    }
+}
+
+function selectSavingsAccount(accountNumber, accountName) {
+    document.getElementById('debitAccID').value = accountNumber;
+    closeSavingsLookup();
+    showToast('Selected: ' + accountNumber + ' - ' + accountName, 'success');
+}
+
+function closeSavingsLookup() {
+    document.getElementById('savingsModal').classList.remove('show');
 }

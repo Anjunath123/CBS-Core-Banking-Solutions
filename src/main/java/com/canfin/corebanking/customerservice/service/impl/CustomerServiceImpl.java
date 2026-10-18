@@ -1,8 +1,8 @@
 package com.canfin.corebanking.customerservice.service.impl;
 
 
-import com.canfin.corebanking.customerservice.constants.AppConstants;
 import com.canfin.corebanking.customerservice.config.CacheConfig;
+import com.canfin.corebanking.customerservice.constants.AppConstants;
 import com.canfin.corebanking.customerservice.dto.AddressDto;
 import com.canfin.corebanking.customerservice.dto.CustomerDto;
 import com.canfin.corebanking.customerservice.dto.KycDocumentDto;
@@ -19,14 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import com.canfin.corebanking.customerservice.dto.CustomerBankInfoDto;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -99,15 +98,12 @@ public class CustomerServiceImpl implements CustomerService {
                  throw new OmniNGException("Customer Cannot be Adding More than 3 Bank Accounts");
             }
             // ✅ Rule 2: At least one primary account (isPrimary = 1)
-            boolean hasPrimary = bankList.stream()
-                    .anyMatch(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1);
+            boolean hasPrimary = bankList.stream().anyMatch(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1);
             if (!hasPrimary) {
                 throw new OmniNGException("At least one primary bank account is required");
             }
             // ✅ Rule 3: Only one primary account allowed
-            long primaryCount = bankList.stream()
-                    .filter(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1)
-                    .count();
+            long primaryCount = bankList.stream().filter(dto -> dto.getPrimaryAccount() != null && dto.getPrimaryAccount() == 1).count();
             if (primaryCount > 1) {
                 throw new OmniNGException("Only one primary bank account is allowed");
             }
@@ -323,9 +319,6 @@ public class CustomerServiceImpl implements CustomerService {
     public void deleteCustomer(Integer branchCode, Long customerId) throws OmniNGException {
         Customer customer = getUniqueCustomer(tenantId, branchCode, customerId);
         if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
-            throw new OmniNGException("Customer already approved");
-        }
-        if(customer.getCustomerStatus().equalsIgnoreCase(CustomerType.APPROVED.toString())) {
             throw new OmniNGException("Customer already approved. so cannot be delete Customer");
         }
         customerRepository.delete(customer);
@@ -409,5 +402,14 @@ public class CustomerServiceImpl implements CustomerService {
             dto.setCustomerStatus(c.getCustomerStatus());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CustomerDto> getAllCustomer() throws OmniNGException {
+        List<Customer> customerList=customerRepository.findAll();
+        if(customerList.isEmpty()){
+            return new ArrayList<>();
+        }
+        return customerList.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 }

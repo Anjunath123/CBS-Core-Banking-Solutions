@@ -4,6 +4,8 @@ import com.canfin.corebanking.customerservice.dto.CreditDebitRequest;
 import com.canfin.corebanking.customerservice.dto.SavingsAccountDto;
 import com.canfin.corebanking.customerservice.exception.OmniNGException;
 
+import java.util.List;
+
 public interface SavingsAccountService {
 
     SavingsAccountDto createSavingsAccount(SavingsAccountDto request) throws OmniNGException;
@@ -13,4 +15,6 @@ public interface SavingsAccountService {
     SavingsAccountDto creditAmount(CreditDebitRequest request) throws OmniNGException;
 
     SavingsAccountDto getAccountDetails(String accountNumber, Integer branchCode) throws OmniNGException;
+
+    List<SavingsAccountDto> getAccountsByCustomer(Integer branchCode, Long customerId) throws OmniNGException;
 }
