@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class BaseResponse<T> {
 
     private T data;
@@ -17,6 +14,17 @@ public class BaseResponse<T> {
     private String errorMessage;
     private String successMessage;
     private String successCode;
+
+    public BaseResponse(T data,  String successCode,String successMessage) {
+        this.data = data;
+        this.successCode = successCode;
+        this.successMessage = successMessage;
+        this.errorCode = "0";
+        this.errorMessage = null;
+    }
+
+    public BaseResponse() {
+    }
 
     public T getData() {
         return data;

@@ -16,6 +16,9 @@ public class AppConstants {
     public static final String DEPOSIT_STATUS_PENDING="Pending";
     public static final String DEPOSIT_STATUS_ACTIVE="Active";
 
-
-
+    public static final String VOUCHER_BATCH_CODE_TD = "TD";
+    public static final Integer MODULE_CODE_TD = 3;
+    public static final Integer MODULE_CODE_SB = 1;
+    public static final String ACTIVITY_CODE_TD_OPEN = "TDOPEN";
+    public static final String SB_ACCOUNT_PREFIX = "SB";
 }

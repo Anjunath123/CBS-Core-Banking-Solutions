@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Master - Admin - Core Banking Solutions</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-submenu { padding-left: 20px; }
+        .nav-submenu .nav-link { font-size: 13px; padding: 10px 24px; }
+        .nav-parent { color: #fff; padding: 14px 24px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .nav-parent:hover { background: rgba(255,255,255,0.08); }
+        .branch-list-table { margin-top: 16px; }
+        .branch-list-table tr:hover { background: #ebf4ff; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><img src="img/bank-logo.svg" class="bank-logo" alt="Bank Logo"> Core Banking Solutions</h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+                <a href="/Kiya.aiCBS-10.2.0/home-loan" class="nav-link">Home Loan</a>
+                <div class="nav-parent" onclick="toggleSubmenu()">Admin <span id="adminArrow">&#9660;</span></div>
+                <div class="nav-submenu" id="adminSubmenu">
+                    <a href="/Kiya.aiCBS-10.2.0/branch-master" class="nav-link active">Branch Master</a>
+                </div>
+                <div style="margin-top:auto;padding:14px 24px;border-top:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#a0b4cc;font-size:12px;" id="loggedInUser"></span>
+                    <a onclick="doLogout()" class="nav-link" style="color:#e53e3e;font-size:13px;padding:8px 0;">&#x2190; Logout</a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="create">Create Branch</div>
+                    <div class="tab" data-tab="list">Branch List</div>
+                </div>
+
+                <!-- CREATE/EDIT BRANCH TAB -->
+                <div id="tab-create" class="tab-content active">
+                    <form id="branchForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">Basic Details</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Branch Code</label>
+                                        <input type="text" id="branchCode" required maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Branch Name</label>
+                                        <input type="text" id="branchName" required maxlength="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Branch Type</label>
+                                        <select id="branchType">
+                                            <option value="">Select</option>
+                                            <option value="Head Office">Head Office</option>
+                                            <option value="Regional Office">Regional Office</option>
+                                            <option value="Branch">Branch</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>IFSC Code</label>
+                                        <input type="text" id="ifscCode" maxlength="20" placeholder="Enter IFSC Code">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>MICR Code</label>
+                                        <input type="text" id="micrCode" maxlength="20" placeholder="Enter MICR Code">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Branch Email ID</label>
+                                        <input type="email" id="branchEmailId" maxlength="100" placeholder="Enter Branch Email">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">Branch Address</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>House/Plot No/Building Name</label>
+                                        <input type="text" id="buildingName" maxlength="200" placeholder="Enter Building Name/Plot No">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Street/Road Name</label>
+                                        <input type="text" id="streetName" maxlength="200" placeholder="Enter Street Name">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Landmark</label>
+                                        <input type="text" id="landmark" maxlength="200" placeholder="Enter Landmark if any">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Locality Name</label>
+                                        <input type="text" id="localityName" maxlength="200" placeholder="Enter Locality Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Country Code</label>
+                                        <input type="text" id="countryCode" maxlength="10" placeholder="Enter Country Code">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="saveBranch()">Save Branch</button>
+                            <button type="reset" class="btn btn-outline" onclick="resetBranchForm()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- BRANCH LIST TAB -->
+                <div id="tab-list" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">All Branches</div>
+                        <div class="card-body" style="overflow-x:auto;">
+                            <table class="branch-list-table">
+                                <thead>
+                                    <tr>
+                                        <th>Branch Code</th>
+                                        <th>Branch Name</th>
+                                        <th>Type</th>
+                                        <th>IFSC</th>
+                                        <th>Email</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="branchListBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/branch-master.js"></script>
+</body>
+</html>

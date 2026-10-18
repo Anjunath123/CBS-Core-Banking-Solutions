@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Loan - Core Banking Solutions</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/auth.js"></script>
+    <style>
+        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; flex-wrap: wrap; }
+        .tab { padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: #718096; border-bottom: 3px solid transparent; }
+        .tab.active { color: #2c5282; border-bottom-color: #2c5282; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; padding-top: 16px; }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-APPLIED { background: #fefcbf; color: #975a16; }
+        .status-UNDER_VERIFICATION { background: #e9d8fd; color: #553c9a; }
+        .status-ELIGIBLE { background: #c6f6d5; color: #276749; }
+        .status-NOT_ELIGIBLE { background: #fed7d7; color: #9b2c2c; }
+        .status-APPROVED { background: #bee3f8; color: #2a4365; }
+        .status-DISBURSED { background: #b2f5ea; color: #234e52; }
+        .status-ACTIVE { background: #c6f6d5; color: #22543d; }
+        .status-CLOSED { background: #e2e8f0; color: #4a5568; }
+        .status-EMI_OVERDUE { background: #fed7d7; color: #742a2a; }
+        .loan-summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .summary-item { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; }
+        .summary-item label { font-size: 11px; color: #718096; text-transform: uppercase; font-weight: 600; }
+        .summary-item .value { font-size: 18px; font-weight: 700; color: #2d3748; margin-top: 4px; }
+        .emi-table { max-height: 400px; overflow-y: auto; }
+        .emi-paid { background: #f0fff4 !important; }
+        .emi-overdue { background: #fff5f5 !important; }
+        .step-indicator { display: flex; gap: 4px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+        .step { padding: 6px 12px; background: #edf2f7; border-radius: 16px; font-size: 11px; font-weight: 600; color: #718096; }
+        .step.done { background: #c6f6d5; color: #276749; }
+        .step.current { background: #bee3f8; color: #2a4365; }
+        .step-arrow { color: #cbd5e0; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><img src="img/bank-logo.svg" class="bank-logo" alt="Bank Logo"> Core Banking Solutions</h1>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a href="/Kiya.aiCBS-10.2.0/customer" class="nav-link">Customer</a>
+                <a href="/Kiya.aiCBS-10.2.0/deposit" class="nav-link">Deposit (FD)</a>
+                <a href="/Kiya.aiCBS-10.2.0/savings" class="nav-link">Savings Account</a>
+                <a href="/Kiya.aiCBS-10.2.0/loan-against-fd" class="nav-link">Loan Against FD</a>
+                <a href="/Kiya.aiCBS-10.2.0/home-loan" class="nav-link active">Home Loan</a>
+                <div style="color:#fff;padding:14px 24px;font-size:14px;font-weight:600;">Admin</div>
+                <a href="/Kiya.aiCBS-10.2.0/branch-master" class="nav-link" style="padding-left:36px;font-size:13px;">Branch Master</a>
+                <div style="margin-top:auto;padding:14px 24px;border-top:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#a0b4cc;font-size:12px;" id="loggedInUser"></span>
+                    <a onclick="doLogout()" class="nav-link" style="color:#e53e3e;font-size:13px;padding:8px 0;">&#x2190; Logout</a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="tab-bar">
+                    <div class="tab active" data-tab="apply">Apply</div>
+                    <div class="tab" data-tab="verify">Verify & Eligibility</div>
+                    <div class="tab" data-tab="approve">Approve</div>
+                    <div class="tab" data-tab="disburse">Disburse</div>
+                    <div class="tab" data-tab="emi">EMI Schedule</div>
+                    <div class="tab" data-tab="pay">Pay EMI</div>
+                    <div class="tab" data-tab="close">Close Loan</div>
+                    <div class="tab" data-tab="search">Search</div>
+                </div>
+
+                <!-- TAB 1: APPLY -->
+                <div id="tab-apply" class="tab-content active">
+                    <form id="applyForm" onsubmit="return false;">
+                        <div class="card">
+                            <div class="card-header">🏠 Home Loan Application</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Branch Code</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="applyBranchCode" required>
+                                            <button type="button" class="btn-f2" onclick="openBranchLookup(function(code){document.getElementById('applyBranchCode').value=code;})">F2</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Customer ID</label>
+                                        <input type="number" id="applyCustomerId" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Applicant Name</label>
+                                        <input type="text" id="applyApplicantName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Loan Amount (₹)</label>
+                                        <input type="number" id="applyLoanAmount" min="100000" step="1000" required placeholder="e.g. 2000000">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Interest Rate (%)</label>
+                                        <input type="number" id="applyInterestRate" step="0.01" min="1" max="20" required placeholder="e.g. 8.5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Tenure (Months)</label>
+                                        <input type="number" id="applyTenureMonths" min="12" max="360" required placeholder="e.g. 240">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="required">Monthly Income (₹)</label>
+                                        <input type="number" id="applyMonthlyIncome" min="1" required placeholder="e.g. 50000">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Existing EMI Total (₹)</label>
+                                        <input type="number" id="applyExistingEmi" value="0" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Property Valuation (₹)</label>
+                                        <input type="number" id="applyPropertyValuation" min="0">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" style="grid-column: span 2;">
+                                        <label class="required">Property Address</label>
+                                        <input type="text" id="applyPropertyAddress" required placeholder="Full property address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Disbursement Type</label>
+                                        <select id="applyDisbursementType" required>
+                                            <option value="">Select</option>
+                                            <option value="READY_HOUSE">Ready House (Seller)</option>
+                                            <option value="UNDER_CONSTRUCTION">Under Construction (Builder)</option>
+                                            <option value="PERSONAL_USAGE">Personal Usage (Self)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button type="button" class="btn btn-primary" onclick="applyForLoan()">Submit Application</button>
+                            <button type="reset" class="btn btn-outline">Reset</button>
+                        </div>
+                    </form>
+                    <div id="applyResult"></div>
+                </div>
+
+                <!-- TAB 2: VERIFY -->
+                <div id="tab-verify" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">🔍 Verification & Eligibility Check</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="verifyLoanAccNo" placeholder="e.g. HL17...">
+                                </div>
+                                <button class="btn btn-primary" onclick="verifyEligibility()">Check Eligibility</button>
+                            </div>
+                            <div id="verifyResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: APPROVE -->
+                <div id="tab-approve" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">✅ Loan Approval</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="approveLoanAccNo" placeholder="e.g. HL17...">
+                                </div>
+                                <button class="btn btn-success" onclick="approveLoan()">Approve Loan</button>
+                            </div>
+                            <div id="approveResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: DISBURSE -->
+                <div id="tab-disburse" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">💰 Loan Disbursement</div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="required">Loan Account Number</label>
+                                    <input type="text" id="disburseLoanAccNo" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Beneficiary Account No</label>
+                                    <input type="text" id="disburseBeneficiaryAcc" required placeholder="Seller/Builder account">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Beneficiary Name</label>
+                                    <input type="text" id="disburseBeneficiaryName" required>
+                                </div>
+                            </div>
+                            <div class="actions" style="justify-content:flex-start;">
+                                <button class="btn btn-primary" onclick="disburseLoan()">Disburse Loan</button>
+                            </div>
+                            <div id="disburseResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: EMI SCHEDULE -->
+                <div id="tab-emi" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">📊 EMI Schedule (Amortization)</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="emiLoanAccNo" placeholder="e.g. HL17...">
+                                </div>
+                                <button class="btn btn-primary" onclick="loadEmiSchedule()">Load Schedule</button>
+                            </div>
+                            <div id="emiResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 6: PAY EMI -->
+                <div id="tab-pay" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">🔁 EMI Payment</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="payLoanAccNo" placeholder="e.g. HL17...">
+                                </div>
+                                <button class="btn btn-success" onclick="payEmi()">Pay Next EMI</button>
+                            </div>
+                            <div id="payResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 7: CLOSE -->
+                <div id="tab-close" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">🏁 Loan Closure / Pre-Closure</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="closeLoanAccNo" placeholder="e.g. HL17...">
+                                </div>
+                                <button class="btn btn-danger" onclick="closeLoan()">Close Loan</button>
+                            </div>
+                            <div id="closeResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 8: SEARCH -->
+                <div id="tab-search" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">🔎 Search Loans</div>
+                        <div class="card-body">
+                            <div class="search-bar">
+                                <div class="form-group">
+                                    <label>Loan Account Number</label>
+                                    <input type="text" id="searchLoanAccNo">
+                                </div>
+                                <div class="form-group">
+                                    <label>OR Customer ID</label>
+                                    <input type="number" id="searchCustomerId">
+                                </div>
+                                <button class="btn btn-primary" onclick="searchLoan()">Search</button>
+                            </div>
+                            <div id="searchResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Branch Lookup Modal -->
+    <div id="branchLookupModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Select Branch (F2)</span>
+                <button class="close-btn" onclick="closeBranchLookup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="branchLookupContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/branch-lookup.js"></script>
+    <script src="js/home-loan.js"></script>
+</body>
+</html>
