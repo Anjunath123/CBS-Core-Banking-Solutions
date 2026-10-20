@@ -132,8 +132,8 @@ public class LoanAgainstFDServiceImpl implements LoanAgainstFDService {
     }
 
     @Override
-    public List<LoanAgainstFDDto> getAllLoanAgainstFD() throws OmniNGException {
-        List<LoanAgainstFD> loans = loanAgainstFDRepository.findAll();
+    public List<LoanAgainstFDDto> getAllLoanAgainstFD(Integer tenantId,Integer branchCode) throws OmniNGException {
+        List<LoanAgainstFD> loans = loanAgainstFDRepository.fetchAllActiveLADAccounts(tenantId, branchCode, AppConstants.ACTIVE);
         return loans.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
