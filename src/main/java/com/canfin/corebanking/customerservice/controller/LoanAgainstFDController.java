@@ -6,6 +6,7 @@ import com.canfin.corebanking.customerservice.service.LoanAgainstFDService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,9 @@ public class LoanAgainstFDController {
 
     @Autowired
     private LoanAgainstFDService loanAgainstFDService;
+
+    @Value("${CBS_BANK_TENANT}")
+    private Integer tenantId;
 
     @PostMapping("/create")
     public ResponseEntity<?> createLoan(@Valid @RequestBody LoanAgainstFDDto request) {
@@ -40,9 +44,9 @@ public class LoanAgainstFDController {
         return ResponseEntity.ok(baseResponse);
     }
     @GetMapping(value = "/getAllLoanAgainstFD", produces = "application/json" )
-    public ResponseEntity<?> getAllLoanAgainstFD(){
+    public ResponseEntity<?> getAllLoanAgainstFD(@RequestParam Integer branchCode){
         BaseResponse<List<LoanAgainstFDDto>> baseResponse=new BaseResponse<>();
-        List<LoanAgainstFDDto> response=loanAgainstFDService.getAllLoanAgainstFD();
+        List<LoanAgainstFDDto> response=loanAgainstFDService.getAllLoanAgainstFD(tenantId,branchCode);
         baseResponse.setData(response);
         baseResponse.setSuccessCode(HttpStatus.OK.toString());
         baseResponse.setSuccessMessage("LoanAgainstFD fetched Successfully");

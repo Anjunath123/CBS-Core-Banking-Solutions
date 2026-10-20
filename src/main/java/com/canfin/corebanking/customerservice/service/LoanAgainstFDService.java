@@ -11,5 +11,5 @@ public interface LoanAgainstFDService {
 
     LoanAgainstFDDto approveLoanAgainstFD(String loanAccountNumber, Integer branchCode) throws OmniNGException;
 
-    List<LoanAgainstFDDto> getAllLoanAgainstFD() throws OmniNGException;
+    List<LoanAgainstFDDto> getAllLoanAgainstFD(Integer tenantId,Integer branchCode) throws OmniNGException;
 }
